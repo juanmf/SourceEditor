@@ -1,0 +1,20 @@
+{
+    "name": "docdigital/php-class-editor",
+    "license": "MIT",
+    "description": "Library to tokenize, edit and override PHP classes",
+    "require": {
+       
+    },
+    "authors": [
+        {
+            "name": "Juan Manuel Fernandez",
+            "email": "juanmf@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "DocDigital\\Lib\\SourceEditor": "" }
+    },
+    "target-dir": "DocDigital/Lib/SourceEditor",
+    "extra": {},            
+    "minimum-stability": "dev"
+}
