@@ -5,7 +5,7 @@ Library to tokenize, edit and override PHP classes.
 
 Installation
 ============
-it can be installed with composer in the CLI.
+It can be installed with composer in the CLI.
 
 ```
 $ php composer.phar update docdigital/php-class-editor
