@@ -28,6 +28,8 @@ use DocDigital\Lib\SourceEditor\ClassStructure\ClassElement;
 ```
 You might also need to include composer's [autoload](https://getcomposer.org/doc/04-schema.md#psr-0)
 
+Testing and suggestions are very wellcome.
+
 Overview
 ========
 
