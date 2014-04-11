@@ -3,6 +3,22 @@ SourceEditor
 
 Library to tokenize, edit and override PHP classes.
 
+Installation
+============
+it can be installed with composer in the CLI.
+
+```
+$ php composer.phar update docdigital/php-class-editor
+```
+And including the classes in your code:
+```php
+use DocDigital\Lib\SourceEditor\PhpClassEditor;
+use DocDigital\Lib\SourceEditor\ClassStructure\ClassElement;
+```
+
+Overview
+========
+
 Attempts to handle modiffications in existing PHP Class, by adding annotations
  to specific properties, adding properties and methods.
  
@@ -47,6 +63,7 @@ Attempts to handle modiffications in existing PHP Class, by adding annotations
  Then you should be able to issue: 
 ```php
     /* @var $classEditor DocDigital\Lib\SourceEditor\PhpClassEditor */
+    $classEditor->parseFile($classPath);
     $classEditor->getClass('a')->getMethod('b')->addAnnotation('@auth Juan Manuel Fernandez <juanmf@gmail.com>');
     $classEditor->getClass('a')->getAttribute('attr')->addAnnotation('@Assert\Choice(...)');
     $classEditor->getClass('a')->addAttribute($attr2);
@@ -150,3 +167,73 @@ class Asd extends \DocDigital\Bundle\DocumentBundle\Entity\Document
     const ROLE_DELETE = 'ROLE_ASD_DELETE';
     ...
 ```
+
+Internals
+=========
+
+Here's TokenParser.php's DocBlock. The parser is a decoupled piece of code, PhpClassEditor relies on it and gives it 2 Closures to arrange the class composite structure.
+
+```php
+/**
+ * Handles Token classification, code {@link ElementBuilder} creation and code context/scope
+ * changes detection. Each ElementBuilder will contain either a significant code part or gap code,
+ * like T_WHITESPACE or unclassified code, like method body (as currently not inspecting inside method).
+ * 
+ * Every time an ElementBuilder is closed, or a context changes (which also closes an ElementBuilder)
+ * it gets forwarded to a couple of callback closures given by client code:<pre>
+ *    {@link self::$contextChangeClosure}
+ *    {@link self::$processElementClosure}
+ *</pre>
+ * Which are passed as parameters to {@link self::setSource()}
+ * 
+ * The basic sequence is:<pre>
+ * +------------+  +--------------+
+ * | :ClientObj |  | :TokenParser |
+ * +------------+  +--------------+
+ *      |              |
+ *      |--setSource-->|
+ *      |--parseCode-->|--readToken--+[forEach Token, this iteration changes context as token is a contextStart]
+ *      |              ||<-----------+
+ *      |              ||--read<CONTEXT>Token--+
+ *      |              |||<--------------------+
+ *      |              |||--_checkContextChange--+
+ *      |              ||||<---------------------+
+ *      |              ||||--_isContextStart--+
+ *      |              |||||<-----------------+
+ *      |              ||||--_changeContext--+ [if Context changed e.g. class=>method]
+ *      |              |||||<----------------+
+ *      |              |||||--_startNewElement--+
+ *      |              ||||||<------------------+
+ *      |              ||||||------------------------------+
+ *      ||<--$processElementClosure(self::elementBuilder)--+
+ *      |              |||||
+ *      |              |||||------------------------------------------------------------+
+ *      ||<--$contextChangeClosure($newContext, $currentContext, self::elementBuilder)--+
+ *      |              |||||
+ *      |              |||||--readToken--+ [reReads Token without increasing {@link self::pointer}]
+ *      |              ||||||<-----------+
+ *      |              |
+ *      |              |[continue Looping forEach Token at parseCode, now reads a token that doesn't change context]
+ *      |              |
+ *      |              |--readToken--+[forEach Token]
+ *      |              ||<-----------+
+ *      |              ||--read<CONTEXT>Token--+
+ *      |              |||<--------------------+
+ *      |              |||--_checkContextChange--+
+ *      |              ||||<---------------------+
+ *      |              ||||--_isContextStart--+
+ *      |              |||||<-----------------+
+ *      |              ||||--_isContextEnd--+ [Called only if _isContextStart returns false, also 
+ *      |              |||||<---------------+      returns false for this token]
+ *      |              |||
+ *      |              |||--_loadTokenInElement--+ [context didn't change, add token to ElementBuilder]
+ *      |              ||||<---------------------+
+ *      |              ||||--_startNewElement--+   [Only if token is a delimiter Flag that closes current 
+ *      |              |||||<------------------+       self::elementBuilder again calling $processElementClosure]
+ *      |              |
+ *      |              |[continue Looping forEach Token at parseCode, now reads a token that doesn't change context]
+ *      |              |
+ * 
+ * @author Juan Manuel Fernandez <juanmf@gmail.com>
+ */
+ ```
