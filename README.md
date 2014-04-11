@@ -56,6 +56,7 @@ Attempts to handle modiffications in existing PHP Class, by adding annotations
 
 When finished you must render the file.
 ```php
+    // Element::render() is a composite pattern implementation, class renders its children and so on. 
     file_put_contents('PATH/TO/CLASS/FILE', $classEditor->getClass('a')->render(false));
 ```
 
