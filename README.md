@@ -5,7 +5,7 @@ Library to tokenize, edit and override PHP classes.
 
 Installation
 ============
-It can be installed with composer in the CLI.
+It can be installed with [composer](https://getcomposer.org/doc/00-intro.md)  in the CLI.
 First add the package to your composer.json
 ```json
     "require": {
@@ -26,6 +26,7 @@ And including the classes in your code:
 use DocDigital\Lib\SourceEditor\PhpClassEditor;
 use DocDigital\Lib\SourceEditor\ClassStructure\ClassElement;
 ```
+You might also need to include composer's [autoload](https://getcomposer.org/doc/04-schema.md#psr-0)
 
 Overview
 ========
