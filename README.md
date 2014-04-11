@@ -6,11 +6,22 @@ Library to tokenize, edit and override PHP classes.
 Installation
 ============
 It can be installed with composer in the CLI.
+First add the package to your composer.json
+```json
+    "require": {
+       ...
+        "docdigital/php-class-editor": "dev-master"
+    },
+```
+
+then update your project
 
 ```
 $ php composer.phar update docdigital/php-class-editor
 ```
+
 And including the classes in your code:
+
 ```php
 use DocDigital\Lib\SourceEditor\PhpClassEditor;
 use DocDigital\Lib\SourceEditor\ClassStructure\ClassElement;
