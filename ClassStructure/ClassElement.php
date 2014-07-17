@@ -103,12 +103,16 @@ class ClassElement extends Element
     
     /**
      * Traits
-     * 
-     * @param type $traitLine
+     *
+     * @param type $trait
      */
-    public function addTrait($traitLine)
+    public function addTrait($trait)
     {
-        $this->traits[] = $traitLine;
+        if (! ($trait instanceof TraitElement)) {
+            $trait = new TraitElement($this, $trait);
+        }
+        ($trait->getParentClass() !== $this) && $trait->setParentClass($this);
+        $this->traits[] = $trait;
     }
 
     /**
