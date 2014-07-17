@@ -103,12 +103,16 @@ class ClassElement extends Element
     
     /**
      * Traits
-     * 
-     * @param type $traitLine
+     *
+     * @param type $trait
      */
-    public function addTrait($traitLine)
+    public function addTrait($trait)
     {
-        $this->traits[] = $traitLine;
+        if (! ($trait instanceof TraitElement)) {
+            $trait = new TraitElement($this, $trait);
+        }
+        ($trait->getParentClass() !== $this) && $trait->setParentClass($this);
+        $this->traits[] = $trait;
     }
 
     /**
@@ -243,7 +247,7 @@ class ClassElement extends Element
         } else {
             $out = sprintf(
                 "<?php\n\n%s\n\n%s\n\n%s\n%s{\n%s\n}\n",
-                $this->namespace, implode("\n", $this->classDeps),
+                $this->namespace, implode("\n", array_unique($this->classDeps)),
                 implode('', $this->docBlock), $this->classDefLine, $this->renderBody()
             );
         }
