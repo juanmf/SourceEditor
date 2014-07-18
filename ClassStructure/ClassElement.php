@@ -246,7 +246,7 @@ class ClassElement extends Element
             }
         } else {
             $out = sprintf(
-                "<?php\n\n%s\n\n%s\n\n%s\n%s{\n%s\n}\n",
+                "<?php\n\n%s\n\n%s\n\n%s\n%s{\n%s}\n",
                 $this->namespace, implode("\n", array_unique($this->classDeps)),
                 implode('', $this->docBlock), $this->classDefLine, $this->renderBody()
             );

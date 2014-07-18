@@ -102,7 +102,7 @@ class AttributeElement extends Element
             }
         } else {
             $out = sprintf(
-                "\n    %s\n    %s", 
+                "\n    %s\n    %s\n", 
                 implode("", $this->docBlock), 
                 implode("", $this->body)
             );
