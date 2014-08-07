@@ -118,8 +118,8 @@ class TokenParser
     );
     
     private $elementEndFlags = array(
-        self::CONTEXT_PHP     => array(';', '}'),
-        self::CONTEXT_CLASS   => array(';', '}'),
+        self::CONTEXT_PHP    => array(';', '}'),
+        self::CONTEXT_CLASS  => array(';', '}'),
         // Currenlty not looking inside methods.
         self::CONTEXT_METHOD => array(),
     );

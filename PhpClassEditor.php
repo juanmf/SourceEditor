@@ -227,6 +227,9 @@ class PhpClassEditor
             case $this->tokenParser->figureOutElementType(TokenParser::CONTEXT_CLASS, TokenParser::CONTEXT_PHP):
                 $this->setClassDef($class, $e);
                 break;
+            case $this->tokenParser->figureOutElementType(T_USE, TokenParser::CONTEXT_CLASS):
+                $class->addTrait($this->createTrait($e));
+                break;
             case $this->tokenParser->figureOutElementType(T_CONST, TokenParser::CONTEXT_CLASS):
                 $class->addConst($this->createConstant($e));
                 break;
@@ -283,7 +286,7 @@ class PhpClassEditor
 
     /**
      * As T_CLASS comes after header (namespace, use, doc, whatever..) finishes,
-     * neede elements are in {@link self::elementsBuffer} or alternatively in given
+     * needed elements are in {@link self::elementsBuffer} or alternatively in given
      * $elements. Adds each element to its Collection, according to 
      * {@link ElementBuilder::$elementType}.
      * 
@@ -338,6 +341,23 @@ class PhpClassEditor
      * 
      * @param ElementBuilder $e
      */
+    public function createTrait(ElementBuilder $e)
+    {
+        $tarit = new TraitElement();
+        $this->addElementDocBlock($tarit);
+        $tarit->addBodyElement($e);
+        $tarit->setName($this->tokenParser->findElementName($e));
+        return $tarit;
+    }
+
+    /**
+     * Creates an instance of ConstantElement with the given ElementBuilder, and 
+     * tries to assign it its DocBlock.
+     * 
+     * Gap elements are loaded as generic elements. to preserve their order.
+     * 
+     * @param ElementBuilder $e
+     */
     public function createConstant(ElementBuilder $e)
     {
         $const = new ConstantElement();
@@ -362,7 +382,7 @@ class PhpClassEditor
                     $structureElement->addDocBlock(new DocBlock($element));
                     break;
             }
-            // Last element should be the [Attr|Const] body e.g. "public $var = null;"
+            // Last element should be the [Attr|Const|trait] body e.g. "public $var = null;"
             $structureElement->addElement($element);
         }
         $this->elementsBuffer = array();
