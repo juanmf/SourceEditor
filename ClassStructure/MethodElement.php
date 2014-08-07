@@ -101,7 +101,7 @@ class MethodElement extends Element
             }
         } else {
             $out = sprintf(
-                "\n    %s\n    %s{\n%s}\n", 
+                "\n    %s\n    %s{%s}\n", 
                 implode("", $this->docBlock), 
                 $this->signature,  
                 implode("", $this->body)

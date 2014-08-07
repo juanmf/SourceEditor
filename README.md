@@ -20,6 +20,11 @@ then update your project
 $ php composer.phar update docdigital/php-class-editor
 ```
 
+Or just: 
+```
+$ php composer.phar require docdigital/php-class-editor:dev-master
+```
+
 And including the classes in your code:
 
 ```php

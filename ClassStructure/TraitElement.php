@@ -2,80 +2,75 @@
 
 namespace DocDigital\Lib\SourceEditor\ClassStructure;
 
-use \DocDigital\Lib\SourceEditor\ElementBuilder;
-use \DocDigital\Lib\SourceEditor\TokenParser;
+use DocDigital\Lib\SourceEditor\ElementBuilder;
 
 /**
- * Attribute Definition
+ * Trait definition
  * <pre>
  * <elemnet class>
- *     <docBlock/>
  *     <element attribute>
- *         <docBlock/>
  *     </element >
- *     <element method>
- *         <docBlock/>
- *     </element >
- * </elemnet> 
+ * </elemnet>
  * </pre>
  *
  * @author Juan Manuel Fernandez <juanmf@gmail.com>
+ * @author Adam Misiorny <adam.misiorny@gmail.com>
  * @see \DocDigital\Lib\SourceEditor\PhpClassEditor
  * @see Element
  */
-class AttributeElement extends Element
+class TraitElement extends Element
 {
-    
+
     /**
-     * Attr $name
-     * 
+     * trait NAME
+     *
      * @var string
      */
     private $name;
-    
+
     /**
      * the containing class
-     * 
+     *
      * @var ClassElement
      */
     private $parentClass;
-    
+
     /**
      * Intializes Parent Class.
-     * 
-     * If you don't pass a parent class, precedence issues can come up, if you don't 
-     * add this method to a parent class first {@link ClassElement::addAttribute()}, 
-     * when adding elements with {@self::addElement()} as the elements get forwarded 
+     *
+     * If you don't pass a parent class, precedence issues can come up, if you don't
+     * add this method to a parent class first {@link ClassElement::addTrait()},
+     * when adding elements with {@self::addElement()} as the elements get forwarded
      * to parenClass.
-     * 
+     *
      * @param ClassElement $parentClass The parent Class.
-     * @param string       $code        The literal PHP code to convert to this instance.
+     * @param string $code The line of code containing the "use Abc;" code
      */
     public function __construct(ClassElement $parentClass = null, $code = null)
     {
         $this->parentClass = $parentClass;
         if (null !== $code) {
-            $this->populateAttribute($code);
+            $this->populateTrait($code);
         }
     }
-    
+
     /**
-     * creates a ElementBuilder for this Attribute with given literal PHP code.
-     * 
-     * @param string $code The lines of code containing the attribute code
-     * 
-     * @return ConstantElement The Constant to add
+     * creates a Trait to add to the Classelement representing the editing class.
+     *
+     * @param string $code The line of code containing the "use Abc;" code
+     *
+     * @return TraitElement The Trait to add
      */
-    private function populateAttribute($code)
+    private function populateTrait($code)
     {
-        $element = new ElementBuilder($code . "\n\n");
+        $element = new ElementBuilder($code . "\n");
         $this->addBodyElement($element);
-        $this->setName(TokenParser::staticFindElementName($element));
+        $this->setName($element->tokens[3][1]);
     }
-    
+
     /**
-     * Returns Attr name 
-     * 
+     * Returns trait name
+     *
      * @return string
      */
     public function getName()
@@ -84,15 +79,21 @@ class AttributeElement extends Element
     }
 
     /**
-     * sets Attr name.
-     * 
+     * sets trait name.
+     *
      * @param string $name
      */
     public function setName($name)
     {
         $this->name = $name;
     }
-    
+
+    /**
+     *
+     * @param boolean $raw
+     *
+     * @return type
+     */
     public function render($raw = true)
     {
         $out = '';
@@ -102,28 +103,27 @@ class AttributeElement extends Element
             }
         } else {
             $out = sprintf(
-                "\n    %s\n    %s\n", 
-                implode("", $this->docBlock), 
+                "%s",
                 implode("", $this->body)
             );
         }
         return $out;
-    }    
-        
+    }
+
     /**
      * Forwards the element addition to the class
-     * 
+     *
      * @param ElementBuilder $element
      */
     public function addElement(ElementBuilder $element)
     {
-        parent::addElement($element);
         $this->parentClass->addElement($element);
+        parent::addElement($element);
     }
-    
+
     /**
      * returns the containing Class
-     * 
+     *
      * @return ClassElement the containing Class
      */
     public function getParentClass()
@@ -133,7 +133,7 @@ class AttributeElement extends Element
 
     /**
      * sets the containing Class
-     * 
+     *
      * @param ClassElement $parentClass
      */
     public function setParentClass(ClassElement $parentClass)
