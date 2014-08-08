@@ -114,7 +114,21 @@ class ClassElement extends Element
         ($trait->getParentClass() !== $this) && $trait->setParentClass($this);
         $this->traits[] = $trait;
     }
-
+    
+    /**
+     * TODO: only works with lowercase 'implements' if already has interfaces.
+     * 
+     * @param string $interface
+     */
+    public function addInterface($interface)
+    {
+        // TODO: change by a T_IMPLEMENTS implementation.
+        @list($classAndParent, $interfaces) = explode(' implements ', $this->classDefLine);
+        $interfaceParts = array_filter(explode(',', $interfaces));
+        $interfaceParts[] = $interface;
+        $this->classDefLine = implode(' implements ', array($classAndParent, implode(', ', $interfaceParts)));
+    }
+    
     /**
      * Add DockBlock
      * 
@@ -267,7 +281,7 @@ class ClassElement extends Element
     }
 
     /**
-     * renders every Element of the given Element[] array en $raw mode.
+     * renders every Element of the given Element[] array in $raw mode.
      * 
      * @param array $elements
      */
